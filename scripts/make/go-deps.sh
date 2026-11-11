@@ -1,28 +1,32 @@
 #!/bin/sh
 
+# This comment is used to simplify checking local copies of the script.  Bump
+# this number every time a significant change is made to this script.
+#
+# AdGuard-Project-Version: 4
+
+# TODO(m.kazantsev):  Use set -o 'pipefail' when GitHub supports it.
+set -e -f -u
+
 verbose="${VERBOSE:-0}"
 readonly verbose
 
-if [ "$verbose" -gt '1' ]
-then
+if [ "$verbose" -gt '1' ]; then
 	env
 	set -x
-	x_flags='-x'
-elif [ "$verbose" -gt '0' ]
-then
+	x_flags='-x=1'
+elif [ "$verbose" -gt '0' ]; then
 	set -x
-	x_flags=''
+	x_flags='-x=0'
 else
 	set +x
-	x_flags=''
+	x_flags='-x=0'
 fi
 readonly x_flags
-
-set -e -f -u
 
 go="${GO:-go}"
 readonly go
 
-# Don't use quotes with flag variables because we want an empty space if those
-# aren't set.
-"$go" mod download $x_flags
+"$go" mod download "$x_flags"
+
+"$go" install "$x_flags" tool
